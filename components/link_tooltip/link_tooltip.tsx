@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {RefObject, MouseEvent, CSSProperties} from 'react';
+import React, {RefObject, CSSProperties} from 'react';
 import Popper from 'popper.js';
 import ReactDOM from 'react-dom';
 
@@ -108,7 +108,7 @@ export default class LinkTooltip extends React.PureComponent<Props> {
                             pluggableName='LinkTooltip'
                         />
                     </div>,
-                    document.getElementById('root') as HTMLElement
+                    document.getElementById('root') as HTMLElement,
                 )}
                 <span
                     onMouseOver={this.showTooltip}

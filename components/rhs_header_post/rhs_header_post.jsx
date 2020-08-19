@@ -12,12 +12,12 @@ import Constants, {RHSStates} from 'utils/constants';
 import {isMobile} from 'utils/utils.jsx';
 import {browserHistory} from 'utils/browser_history';
 
-export default class RhsHeaderPost extends React.Component {
+export default class RhsHeaderPost extends React.PureComponent {
     static propTypes = {
         rootPostId: PropTypes.string.isRequired,
         channel: PropTypes.object.isRequired,
         previousRhsState: PropTypes.oneOf(
-            Object.values(RHSStates)
+            Object.values(RHSStates),
         ),
         isExpanded: PropTypes.bool.isRequired,
         relativeTeamUrl: PropTypes.string.isRequired,
@@ -93,7 +93,7 @@ export default class RhsHeaderPost extends React.Component {
                 <Tooltip id='backToResultsTooltip'>
                     <FormattedMessage
                         id='rhs_header.backToFlaggedTooltip'
-                        defaultMessage='Back to flagged posts'
+                        defaultMessage='Back to saved posts'
                     />
                 </Tooltip>
             );

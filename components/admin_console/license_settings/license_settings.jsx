@@ -1,5 +1,6 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
+/* eslint-disable react/no-string-refs */
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -13,7 +14,7 @@ import FormattedMarkdownMessage from 'components/formatted_markdown_message.jsx'
 import FormattedAdminHeader from 'components/widgets/admin_console/formatted_admin_header';
 import LoadingWrapper from 'components/widgets/loading/loading_wrapper';
 
-export default class LicenseSettings extends React.Component {
+export default class LicenseSettings extends React.PureComponent {
     static propTypes = {
         license: PropTypes.object.isRequired,
         stats: PropTypes.object,

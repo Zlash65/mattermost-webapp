@@ -12,7 +12,7 @@ import {
     removeIdpSamlCertificate, uploadIdpSamlCertificate,
     removePrivateSamlCertificate, uploadPrivateSamlCertificate,
     removePublicSamlCertificate, uploadPublicSamlCertificate,
-    invalidateAllEmailInvites, testSmtp, testSiteURL, getSamlMetadataFromIdp, setSamlIdpCertificateFromMetadata
+    invalidateAllEmailInvites, testSmtp, testSiteURL, getSamlMetadataFromIdp, setSamlIdpCertificateFromMetadata,
 } from 'actions/admin_actions';
 import SystemAnalytics from 'components/analytics/system_analytics';
 import TeamAnalytics from 'components/analytics/team_analytics';
@@ -363,7 +363,7 @@ const AdminDefinition = {
             url: 'user_management/permissions/team_override_scheme/:scheme_id',
             isHidden: it.either(
                 it.isnt(it.licensed),
-                it.isnt(it.licensedForFeature('CustomPermissionsSchemes'))
+                it.isnt(it.licensedForFeature('CustomPermissionsSchemes')),
             ),
             schema: {
                 id: 'PermissionSystemScheme',
@@ -374,7 +374,7 @@ const AdminDefinition = {
             url: 'user_management/permissions/team_override_scheme',
             isHidden: it.either(
                 it.isnt(it.licensed),
-                it.isnt(it.licensedForFeature('CustomPermissionsSchemes'))
+                it.isnt(it.licensedForFeature('CustomPermissionsSchemes')),
             ),
             schema: {
                 id: 'PermissionSystemScheme',
@@ -661,7 +661,7 @@ const AdminDefinition = {
             title_default: 'Elasticsearch',
             isHidden: it.either(
                 it.isnt(it.licensedForFeature('Elasticsearch')),
-                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin')
+                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin'),
             ),
             searchableStrings: [
                 'admin.elasticsearch.title',
@@ -757,6 +757,17 @@ const AdminDefinition = {
                         help_text_default: 'Name you selected for your S3 bucket in AWS.',
                         placeholder: t('admin.image.amazonS3BucketExample'),
                         placeholder_default: 'E.g.: "mattermost-media"',
+                        isDisabled: it.isnt(it.stateEquals('FileSettings.DriverName', FILE_STORAGE_DRIVER_S3)),
+                    },
+                    {
+                        type: Constants.SettingsTypes.TYPE_TEXT,
+                        key: 'FileSettings.AmazonSPathPrefix',
+                        label: t('admin.image.amazonS3PathPrefixTitle'),
+                        label_default: 'Amazon S3 Path Prefix:',
+                        help_text: t('admin.image.amazonS3PathPrefixDescription'),
+                        help_text_default: 'Prefix you selected for your S3 bucket in AWS.',
+                        placeholder: t('admin.image.amazonS3PathPrefixExample'),
+                        placeholder_default: 'E.g.: "subdir1/" or you can leave it .',
                         isDisabled: it.isnt(it.stateEquals('FileSettings.DriverName', FILE_STORAGE_DRIVER_S3)),
                     },
                     {
@@ -1055,7 +1066,7 @@ const AdminDefinition = {
             title_default: 'High Availability',
             isHidden: it.either(
                 it.isnt(it.licensedForFeature('Cluster')),
-                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin')
+                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin'),
             ),
             searchableStrings: [
                 'admin.advance.cluster',
@@ -1070,6 +1081,8 @@ const AdminDefinition = {
                 'admin.cluster.UseIpAddressDesc',
                 'admin.cluster.UseExperimentalGossip',
                 'admin.cluster.UseExperimentalGossipDesc',
+                'admin.cluster.EnableExperimentalGossipEncryption',
+                'admin.cluster.EnableExperimentalGossipEncryptionDesc',
                 'admin.cluster.GossipPort',
                 'admin.cluster.GossipPortDesc',
                 'admin.cluster.StreamingPort',
@@ -1318,7 +1331,7 @@ const AdminDefinition = {
             title_default: 'Performance Monitoring',
             isHidden: it.either(
                 it.isnt(it.licensedForFeature('Metrics')),
-                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin')
+                it.configIsTrue('ExperimentalSettings', 'RestrictSystemAdmin'),
             ),
             schema: {
                 id: 'MetricsSettings',
@@ -1445,6 +1458,14 @@ const AdminDefinition = {
                         help_text_default: 'Text that will appear below your custom brand image on your login screen. Supports Markdown-formatted text. Maximum 500 characters allowed.',
                         isDisabled: it.stateIsFalse('TeamSettings.EnableCustomBrand'),
                         max_length: Constants.MAX_CUSTOM_BRAND_TEXT_LENGTH,
+                    },
+                    {
+                        type: Constants.SettingsTypes.TYPE_BOOL,
+                        key: 'SupportSettings.EnableAskCommunityLink',
+                        label: t('admin.support.enableAskCommunityTitle'),
+                        label_default: 'Enable Ask Community Link:',
+                        help_text: t('admin.support.enableAskCommunityDesc'),
+                        help_text_default: 'When true, "Ask the community" link appears on the Mattermost user interface and Main Menu, which allows users to join the Mattermost Community to ask questions and help others troubleshoot issues. When false, the link is hidden from users.',
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
@@ -1654,7 +1675,7 @@ const AdminDefinition = {
                         label_default: 'Lock Teammate Name Display for all users: ',
                         help_text: t('admin.lockTeammateNameDisplayHelpText'),
                         help_text_default: 'When true, disables users\' ability to change settings under Main Menu > Account Settings > Display > Teammate Name Display.',
-                        isHidden: it.isnt(it.licensedForFeature('LockTeammateNameDisplay'))
+                        isHidden: it.isnt(it.licensedForFeature('LockTeammateNameDisplay')),
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_PERMISSION,
@@ -1833,7 +1854,7 @@ const AdminDefinition = {
                                 value: 'full',
                                 display_name: t('admin.environment.notifications.pushContents.full'),
                                 display_name_default: 'Full message content sent in the notification payload',
-                            }
+                            },
                         ],
                     },
                     {
@@ -2097,9 +2118,9 @@ const AdminDefinition = {
                         type: Constants.SettingsTypes.TYPE_TEXT,
                         key: 'TeamSettings.RestrictCreationToDomains',
                         label: t('admin.team.restrictTitle'),
-                        label_default: 'Restrict account creation to specified email domains:',
+                        label_default: 'Restrict new system and team members to specified email domains:',
                         help_text: t('admin.team.restrictDescription'),
-                        help_text_default: 'User accounts can only be created from a specific domain (e.g. "mattermost.org") or list of comma-separated domains (e.g. "corp.mattermost.com, mattermost.org"). This setting only affects email login for users.',
+                        help_text_default: 'New user accounts are restricted to the above specified email domain (e.g. "mattermost.org") or list of comma-separated domains (e.g. "corp.mattermost.com, mattermost.org"). New teams can only be created by users from the above domain(s). This setting only affects email login for users.',
                         placeholder: t('admin.team.restrictExample'),
                         placeholder_default: 'E.g.: "corp.mattermost.com, mattermost.org"',
                         isHidden: it.licensed,
@@ -2108,9 +2129,9 @@ const AdminDefinition = {
                         type: Constants.SettingsTypes.TYPE_TEXT,
                         key: 'TeamSettings.RestrictCreationToDomains',
                         label: t('admin.team.restrictTitle'),
-                        label_default: 'Restrict account creation to specified email domains:',
+                        label_default: 'Restrict new system and team members to specified email domains:',
                         help_text: t('admin.team.restrictGuestDescription'),
-                        help_text_default: 'User accounts can only be created from a specific domain (e.g. "mattermost.org") or list of comma-separated domains (e.g. "corp.mattermost.com, mattermost.org"). This setting only affects email login for users. For Guest users, please add domains under Signup > Guest Access.',
+                        help_text_default: 'New user accounts are restricted to the above specified email domain (e.g. "mattermost.org") or list of comma-separated domains (e.g. "corp.mattermost.com, mattermost.org"). New teams can only be created by users from the above domain(s). This setting affects email login for users. For Guest users, please add domains under Signup > Guest Access.',
                         placeholder: t('admin.team.restrictExample'),
                         placeholder_default: 'E.g.: "corp.mattermost.com, mattermost.org"',
                         isHidden: it.isnt(it.licensed),
@@ -2411,7 +2432,7 @@ const AdminDefinition = {
                             it.both(
                                 it.stateIsFalse('LdapSettings.Enable'),
                                 it.stateIsFalse('LdapSettings.EnableSync'),
-                            )
+                            ),
                         ),
                     },
                     {
@@ -2439,7 +2460,7 @@ const AdminDefinition = {
                             it.both(
                                 it.stateIsFalse('LdapSettings.Enable'),
                                 it.stateIsFalse('LdapSettings.EnableSync'),
-                            )
+                            ),
                         ),
                     },
                     {
@@ -2454,7 +2475,7 @@ const AdminDefinition = {
                         placeholder: t('admin.ldap.groupFilterEx'),
                         placeholder_default: 'E.g.: "(objectClass=group)"',
                         isDisabled: it.stateIsFalse('LdapSettings.EnableSync'),
-                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups'))
+                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups')),
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
@@ -2466,7 +2487,7 @@ const AdminDefinition = {
                         placeholder: t('admin.ldap.groupDisplayNameAttributeEx'),
                         placeholder_default: 'E.g.: "cn"',
                         isDisabled: it.stateIsFalse('LdapSettings.EnableSync'),
-                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups'))
+                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups')),
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
@@ -2479,7 +2500,7 @@ const AdminDefinition = {
                         placeholder: t('admin.ldap.groupIdAttributeEx'),
                         placeholder_default: 'E.g.: "objectGUID" or "entryUUID"',
                         isDisabled: it.stateIsFalse('LdapSettings.EnableSync'),
-                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups'))
+                        isHidden: it.isnt(it.licensedForFeature('LDAPGroups')),
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
@@ -2829,7 +2850,7 @@ const AdminDefinition = {
                         type: Constants.SettingsTypes.TYPE_CUSTOM,
                         component: LDAPFeatureDiscovery,
                         key: 'LDAPFeatureDiscovery',
-                    }
+                    },
                 ],
             },
         },
@@ -2900,7 +2921,7 @@ const AdminDefinition = {
                         success_message_default: 'SAML Metadata retrieved successfully. Two fields below have been updated',
                         isDisabled: it.either(
                             it.stateIsFalse('SamlSettings.Enable'),
-                            it.stateEquals('SamlSettings.IdpMetadataUrl', '')
+                            it.stateEquals('SamlSettings.IdpMetadataUrl', ''),
                         ),
                         sourceUrlKey: 'SamlSettings.IdpMetadataUrl',
                     },
@@ -3057,7 +3078,7 @@ const AdminDefinition = {
                         isDisabled: it.either(
                             it.stateIsFalse('SamlSettings.Encrypt'),
                             it.stateIsFalse('SamlSettings.PrivateKeyFile'),
-                            it.stateIsFalse('SamlSettings.PublicCertificateFile')
+                            it.stateIsFalse('SamlSettings.PublicCertificateFile'),
                         ),
                     },
                     {
@@ -3276,7 +3297,7 @@ const AdminDefinition = {
                         type: Constants.SettingsTypes.TYPE_CUSTOM,
                         component: SAMLFeatureDiscovery,
                         key: 'SAMLFeatureDiscovery',
-                    }
+                    },
                 ],
             },
         },
@@ -4456,7 +4477,7 @@ const AdminDefinition = {
                         help_text: t('admin.experimental.experimentalUseNewSAMLLibrary.desc'),
                         help_text_default: 'Enable an updated SAML Library, which does not require the XML Security Library (xmlsec1) to be installed. Warning: Not all providers have been tested. If you experience issues, please contact support: [https://about.mattermost.com/support/](!https://about.mattermost.com/support/). Changing this setting requires a server restart before taking effect.',
                         help_text_markdown: true,
-                        isHidden: it.isnt(it.licensedForFeature('SAML'))
+                        isHidden: it.isnt(it.licensedForFeature('SAML')),
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_TEXT,
@@ -4522,6 +4543,15 @@ const AdminDefinition = {
                         help_text: t('admin.experimental.experimentalChannelOrganization.desc'),
                         help_text_default: 'Enables channel sidebar organization options in **Account Settings > Sidebar > Channel grouping and sorting** including options for grouping unread channels, sorting channels by most recent post and combining all channel types into a single list. These settings are not available if **Account Settings > Sidebar > Experimental Sidebar Features** are enabled.',
                         help_text_markdown: true,
+                    },
+                    {
+                        type: Constants.SettingsTypes.TYPE_BOOL,
+                        key: 'DisplaySettings.ExperimentalDataPrefetch',
+                        label: t('admin.experimental.experimentalDataPrefetch.title'),
+                        label_default: 'Preload messages in unread channels:',
+                        help_text: t('admin.experimental.experimentalDataPrefetch.desc'),
+                        help_text_default: 'When true, messages in unread channels are preloaded to reduce channel loading time. When false, messages are not loaded from the server until users switch channels.',
+                        help_text_markdown: false,
                     },
                     {
                         type: Constants.SettingsTypes.TYPE_BOOL,

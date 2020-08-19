@@ -57,7 +57,7 @@ type Props = {
         getAllGroupsAssociatedToChannelsInTeam: (teamId: string, filterAllowReference: boolean) => Promise<{}>;
         getAllGroupsAssociatedToTeam: (teamId: string, filterAllowReference: boolean) => Promise<{}>;
         getGroupsByUserId: (userID: string) => Promise<{}>;
-        getGroups: (filterAllowReference: boolean) => Promise<{}>;
+        getGroups: (filterAllowReference: boolean, page: number, perPage: number) => Promise<{}>;
 
     };
     mfaRequired: boolean;
@@ -110,7 +110,7 @@ export default class NeedsTeam extends React.PureComponent<Props, State> {
             team,
             finishedFetchingChannels: false,
             prevTeam: this.props.match.params.team,
-            teamsList: this.props.teamsList
+            teamsList: this.props.teamsList,
         };
 
         if (!team) {
@@ -125,7 +125,7 @@ export default class NeedsTeam extends React.PureComponent<Props, State> {
                     teamObj.name === nextProps.match.params.team) : null;
             return {
                 prevTeam: nextProps.match.params.team,
-                team: (team || null)
+                team: (team || null),
             };
         }
         return {prevTeam: nextProps.match.params.team};
@@ -231,7 +231,7 @@ export default class NeedsTeam extends React.PureComponent<Props, State> {
                 this.setState({
                     finishedFetchingChannels: true,
                 });
-            }
+            },
         );
 
         this.props.actions.loadStatusesForChannelAndSidebar();
@@ -248,7 +248,7 @@ export default class NeedsTeam extends React.PureComponent<Props, State> {
             if (team.group_constrained) {
                 this.props.actions.getAllGroupsAssociatedToTeam(team.id, true);
             } else {
-                this.props.actions.getGroups(true);
+                this.props.actions.getGroups(true, 0, 0);
             }
         }
 

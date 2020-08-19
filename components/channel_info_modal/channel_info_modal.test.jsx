@@ -59,7 +59,6 @@ describe('components/ChannelInfoModal', () => {
                 onHide={onHide}
             />,
         );
-
         wrapper.find(Modal).first().props().onExited();
         expect(onHide).toHaveBeenCalled();
     });

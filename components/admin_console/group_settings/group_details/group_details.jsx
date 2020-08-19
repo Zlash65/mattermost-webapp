@@ -34,6 +34,7 @@ export default class GroupDetails extends React.PureComponent {
         actions: PropTypes.shape({
             getGroup: PropTypes.func.isRequired,
             getMembers: PropTypes.func.isRequired,
+            getGroupStats: PropTypes.func.isRequired,
             getGroupSyncables: PropTypes.func.isRequired,
             link: PropTypes.func.isRequired,
             unlink: PropTypes.func.isRequired,
@@ -80,6 +81,7 @@ export default class GroupDetails extends React.PureComponent {
         Promise.all([
             actions.getGroupSyncables(groupID, Groups.SYNCABLE_TYPE_TEAM),
             actions.getGroupSyncables(groupID, Groups.SYNCABLE_TYPE_CHANNEL),
+            actions.getGroupStats(groupID),
         ]).then(() => {
             this.setState({
                 loadingTeamsAndChannels: false,
@@ -261,7 +263,7 @@ export default class GroupDetails extends React.PureComponent {
             saveNeeded,
             allowReference,
             groupMentionName,
-            hasAllowReferenceChanged: allowReference !== originalAllowReference}
+            hasAllowReferenceChanged: allowReference !== originalAllowReference},
         );
         this.props.actions.setNavigationBlocked(saveNeeded);
     }
@@ -275,7 +277,7 @@ export default class GroupDetails extends React.PureComponent {
         this.setState({
             saveNeeded,
             groupMentionName,
-            hasGroupMentionNameChanged: groupMentionName !== originalGroupMentionName
+            hasGroupMentionNameChanged: groupMentionName !== originalGroupMentionName,
         });
         this.props.actions.setNavigationBlocked(saveNeeded);
     }

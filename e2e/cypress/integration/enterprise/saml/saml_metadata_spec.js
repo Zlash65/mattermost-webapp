@@ -7,7 +7,7 @@
 // - Use element ID when selecting an element. Create one if none.
 // ***************************************************************
 
-// Stage: @prod @smoke
+// Stage: @prod
 // Group: @enterprise @saml
 
 /**
@@ -23,8 +23,7 @@ let config;
 describe('SystemConsole->SAML 2.0 - Get Metadata from Idp Flow', () => {
     before(() => {
         // * Check if server has license for SAML
-        cy.apiLogin('sysadmin');
-        cy.requireLicenseForFeature('SAML');
+        cy.apiRequireLicenseForFeature('SAML');
 
         cy.apiUpdateConfig({
             SamlSettings: {
@@ -35,9 +34,8 @@ describe('SystemConsole->SAML 2.0 - Get Metadata from Idp Flow', () => {
                 IdpUrl: testIdpUrl,
                 IdpDescriptorUrl: testIdpDescriptorUrl,
             },
-        });
-        cy.apiGetConfig().then((response) => {
-            config = response.body;
+        }).then((data) => {
+            ({config} = data);
         });
 
         //make sure we can navigate to SAML settings
