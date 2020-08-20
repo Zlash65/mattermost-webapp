@@ -353,6 +353,7 @@ export default class NewChannelModal extends React.PureComponent {
                                         onKeyDown={this.onEnterKeyDown}
                                     />
                                     {displayNameError}
+                                    {serverError}
                                     {/*<p className='input__help dark'>
                                         {'URL: ' + prettyTeamURL + this.props.channelData.name + ' ('}
                                         <button
