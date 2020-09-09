@@ -13,9 +13,6 @@ import MultiSelect from 'components/multiselect/multiselect';
 
 import FormattedMarkdownMessage from 'components/formatted_markdown_message.jsx';
 
-import GlobeIcon from 'components/widgets/icons/globe_icon';
-import LockIcon from 'components/widgets/icons/lock_icon';
-
 const CHANNELS_PER_PAGE = 50;
 
 export default class ChannelSelectorModal extends React.Component {
@@ -46,7 +43,7 @@ export default class ChannelSelectorModal extends React.Component {
     }
 
     componentDidMount() {
-        this.props.actions.loadChannels(0, CHANNELS_PER_PAGE + 1, this.props.groupID, true).then((response) => {
+        this.props.actions.loadChannels(0, CHANNELS_PER_PAGE + 1, this.props.groupID, false).then((response) => {
             this.setState({channels: response.data.sort(compareChannels)});
             this.setChannelsLoadingState(false);
         });
@@ -58,7 +55,7 @@ export default class ChannelSelectorModal extends React.Component {
 
             const searchTerm = this.props.searchTerm;
             if (searchTerm === '') {
-                this.props.actions.loadChannels(0, CHANNELS_PER_PAGE + 1, this.props.groupID, true).then((response) => {
+                this.props.actions.loadChannels(0, CHANNELS_PER_PAGE + 1, this.props.groupID, false).then((response) => {
                     this.setState({channels: response.data.sort(compareChannels)});
                     this.setChannelsLoadingState(false);
                 });
@@ -160,10 +157,10 @@ export default class ChannelSelectorModal extends React.Component {
                 <div
                     className='more-modal__details'
                 >
-                    {option.type === 'P' &&
-                        <LockIcon className='icon icon__lock'/>}
-                    {option.type === 'O' &&
-                        <GlobeIcon className='icon icon__globe'/>}
+                    {option.type === Constants.PRIVATE_CHANNEL &&
+                        <i className='icon icon-lock-outline'/>}
+                    {option.type === Constants.OPEN_CHANNEL &&
+                        <i className='icon icon-globe'/>}
                     <span className='channel-name'>{option.display_name}</span>
                     <span className='team-name'>{'(' + option.team_display_name + ')'}</span>
                 </div>
